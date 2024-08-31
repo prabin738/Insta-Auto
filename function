@@ -1,0 +1,36 @@
+# Instagram Reels Publisher Bot
+
+import requests
+import json
+import os
+from instabot import Bot
+from youtube_dl import YoutubeDL
+
+# Function to download YouTube video
+def download_youtube_video(video_url):
+    ydl_opts = {
+        'format': 'best',
+        'outtmpl': 'downloads/%(title)s.%(ext)s',
+    }
+    with YoutubeDL(ydl_opts) as ydl:
+        ydl.download([video_url])
+        info_dict = ydl.extract_info(video_url, download=False)
+        return f"downloads/{info_dict['title']}.{info_dict['ext']}"
+
+# Function to publish video on Instagram
+def publish_reel(video_path, caption):
+    bot = Bot()
+    bot.login(username='your_username', password='your_password')
+    bot.upload_video(video_path, caption=caption)
+
+# Main function
+def main(video_url, caption):
+    video_path = download_youtube_video(video_url)
+    publish_reel(video_path, caption)
+    os.remove(video_path)  # Clean up the downloaded video
+
+# Example usage
+if __name__ == "__main__":
+    video_url = "https://www.youtube.com/watch?v=example"  # Replace with actual YouTube link
+    caption = "Check out this amazing video!"  # Customize your caption
+    main(video_url, caption)
